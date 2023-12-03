@@ -1,2 +1,5 @@
-#!/usr/bin/env node
-export default function genarate(schemaDir: string, modelDir: string, typeDir: string): void;
+export declare function genarate(schemaDir: string, modelDir: string, typeDir: string): void;
+declare const _default: {
+    genarate: typeof genarate;
+};
+export default _default;

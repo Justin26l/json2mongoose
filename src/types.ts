@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import * as jsonToTypescript from "json-schema-to-typescript";
 import * as fs from "fs";
 

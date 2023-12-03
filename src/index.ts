@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import * as fs from 'fs';
 import * as json2Ts from './types';
 import * as json2Mongoose from './models';
@@ -9,7 +7,7 @@ const relativePath = (fromPath: string, toPath: string): string => {
     return path.relative(fromPath, toPath).replace(/\\/g, '/');
 }
 
-export default function genarate(schemaDir: string, modelDir: string, typeDir: string) {
+export function genarate(schemaDir: string, modelDir: string, typeDir: string) {
     fs.readdir(schemaDir, (err: any, files: string[]) => {
         if (err) {
             console.log(err);
@@ -59,3 +57,7 @@ export default function genarate(schemaDir: string, modelDir: string, typeDir: s
         });
     });
 }
+
+export default {
+    genarate
+};

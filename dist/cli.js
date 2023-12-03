@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+"use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -20,4 +22,4 @@ if (!fs_1.default.existsSync(outputDir)) {
 }
 const modelDir = outputDir + '/models';
 const typeDir = outputDir + '/types';
-(0, index_1.default)(schemaDir, modelDir, typeDir);
+index_1.default.genarate(schemaDir, modelDir, typeDir);

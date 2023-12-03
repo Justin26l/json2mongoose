@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 export declare function json2Mongoose(jsonSchema: {
     [key: string]: any;
 }, interfacePath: string, schemaFileName: string): string;

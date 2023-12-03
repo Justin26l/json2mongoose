@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import * as util from "util";
 import * as fs from "fs";
 
@@ -111,9 +109,9 @@ import { ${interfaceName} } from "${interfacePath}";
 
 const schemaConfig = ${mongooseSchema};
 
-export interface ${interfaceName}Document extends ${interfaceName}, Document {};
+export interface ${documentName}Document extends ${interfaceName}, Document {};
 export const ${documentName}Schema: Schema = new Schema(schemaConfig);
-export const ${interfaceName}Model: Model<${interfaceName}Document> = model<${interfaceName}Document>("${documentName}", ${documentName}Schema);
+export const ${documentName}Model: Model<${documentName}Document> = model<${documentName}Document>("${documentName}", ${documentName}Schema);
 `
 }
 

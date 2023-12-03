@@ -1,4 +1,5 @@
-import genarate from './index';
+#!/usr/bin/env node
+import json2mongoose from './index';
 import fs from 'fs';
 
 const schemaDir = process.argv[2];
@@ -21,6 +22,6 @@ if(!fs.existsSync(outputDir)){
 
 const modelDir = outputDir+'/models';
 const typeDir  = outputDir+'/types';
-genarate(schemaDir, modelDir, typeDir);
+json2mongoose.genarate(schemaDir, modelDir, typeDir);
 
 
