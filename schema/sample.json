@@ -1,0 +1,65 @@
+{
+    "type": "object",
+    "x-documentConfig": {
+        "documentName": "user"
+    },
+    "properties": {
+        "_id": {
+            "type": "string",
+            "format": "uuid",
+            "index": true
+        },
+        "name": {
+            "type": "string",
+            "maxLength": 64,
+            "index": true,
+            "required": true
+        },
+        "userContact": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "phoneNo": {
+                        "type": "string",
+                        "index": true,
+                        "required": true
+                    },
+                    "deleted": {
+                        "type": "integer",
+                        "description": "timestamp"
+                    },
+                    "created": {
+                        "type": "integer",
+                        "description": "timestamp",
+                        "required": true
+                    }
+                }
+            },
+            "required": true
+        },
+        "isActive": {
+            "type": "boolean",
+            "required": true
+        },
+        "created": {
+            "type": "integer",
+            "required": true,
+            "description": "timestamp"
+        },
+        "createdBy": {
+            "type": "string",
+            "required": true,
+            "description": "timestamp"
+        },
+        "updated": {
+            "type": "integer",
+            "description": "timestamp"
+        },
+        "updatedBy": {
+            "type": "string",
+            "description": "timestamp"
+        }
+    },
+    "additionalProperties": false
+}
