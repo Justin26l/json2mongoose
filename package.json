@@ -4,12 +4,13 @@
   "description": "genarate mongoose ts files from jsonSchema",
   "author": "justin26l",
   "license": "MIT",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "bin": {
     "json2mongoose": "dist/cli.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "generate": "node dist/cli.js ./schema ./output",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -17,6 +18,7 @@
     "mongoose"
   ],
   "dependencies": {
+    "@types/mongoose": "^5.11.97",
     "json-schema-to-typescript": "^13.1.1"
   }
 }
