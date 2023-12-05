@@ -7,10 +7,11 @@ exports.defaultCompilerOptions = exports.getGenaratorHeaderComment = exports.get
 // read package.json and get version
 const fs_1 = __importDefault(require("fs"));
 function getPackageInfo() {
+    var _a, _b;
     const packageJson = fs_1.default.readFileSync("./package.json", "utf8");
     const packageJsonObject = JSON.parse(packageJson);
     return {
-        version: packageJsonObject.version || "[unknown version]",
+        version: ((_b = (_a = packageJsonObject.dependencies) === null || _a === void 0 ? void 0 : _a.json2mongoose) === null || _b === void 0 ? void 0 : _b.replace('^', '')) || "[unknown version]",
         author: packageJsonObject.author || "justin26l",
     };
 }

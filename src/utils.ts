@@ -9,7 +9,7 @@ export function getPackageInfo() :{
     const packageJsonObject = JSON.parse(packageJson);
 
     return {
-        version: packageJsonObject.version || "[unknown version]",
+        version: packageJsonObject.dependencies?.json2mongoose?.replace('^','') || "[unknown version]",
         author: packageJsonObject.author || "justin26l",
     };
 }
