@@ -1,6 +1,6 @@
 {
   "name": "json2mongoose",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "genarate mongoose ts files from jsonSchema",
   "author": "justin26l",
   "license": "MIT",
@@ -10,8 +10,13 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "generate": "node dist/cli.js ./schema ./output",
+    "dev": "ts-node src/cli.ts ./jsonSchema ./output",
+    "generate": "node dist/cli.js ./jsonSchema ./output",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Justin26l/json2mongoose.git"
   },
   "keywords": [
     "jsonschema",

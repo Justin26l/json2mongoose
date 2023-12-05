@@ -1,13 +1,16 @@
 import * as fs from 'fs';
-import * as json2Ts from './types';
-import * as json2Mongoose from './models';
+import * as json2Ts from './types_generators';
+import * as json2Mongoose from './models_generator';
 import path from 'path';
+import utils from './utils';
+import { compilerOptions } from './types';
 
 const relativePath = (fromPath: string, toPath: string): string => {
     return path.relative(fromPath, toPath).replace(/\\/g, '/');
 }
 
-export function genarate(schemaDir: string, modelDir: string, typeDir: string) {
+export function genarate(schemaDir: string, modelDir: string, typeDir: string, options?: compilerOptions) {
+    
     fs.readdir(schemaDir, (err: any, files: string[]) => {
         if (err) {
             console.log(err);
@@ -40,14 +43,16 @@ export function genarate(schemaDir: string, modelDir: string, typeDir: string) {
                 // make interface
                 json2Ts.compileFromFile(
                     `${schemaDir}/${schemaFileName}`,
-                    `${typeDir}/${fileTs}`
+                    `${typeDir}/${fileTs}`,
+                    options || utils.defaultCompilerOptions
                 );
 
                 // make model
                 json2Mongoose.compileFromFile(
                     `${schemaDir}/${schemaFileName}`,
                     `${relativePath(modelDir, typeDir)}/${fileName}`,
-                    `${modelDir}/${fileTs}`
+                    `${modelDir}/${fileTs}`,
+                    options || utils.defaultCompilerOptions
                 );
             }
             catch (err: any) {

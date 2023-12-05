@@ -14,7 +14,7 @@ npm install json2mongoose -g
 ### Command Line Interface (CLI)
 To use the tool from the command line, run the following command:
 ```bash
-`json2mongoose` ./schema ./output
+`json2mongoose` ./jsonSchema ./output
 ```
 
 ### Node
