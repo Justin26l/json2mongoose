@@ -28,13 +28,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.genarate = void 0;
 const fs = __importStar(require("fs"));
-const json2Ts = __importStar(require("./types"));
-const json2Mongoose = __importStar(require("./models"));
+const json2Ts = __importStar(require("./types_generators"));
+const json2Mongoose = __importStar(require("./models_generator"));
 const path_1 = __importDefault(require("path"));
+const utils_1 = __importDefault(require("./utils"));
 const relativePath = (fromPath, toPath) => {
     return path_1.default.relative(fromPath, toPath).replace(/\\/g, '/');
 };
-function genarate(schemaDir, modelDir, typeDir) {
+function genarate(schemaDir, modelDir, typeDir, options) {
     fs.readdir(schemaDir, (err, files) => {
         if (err) {
             console.log(err);
@@ -60,9 +61,9 @@ function genarate(schemaDir, modelDir, typeDir) {
                 const fileName = schemaFileName.replace('.json', '');
                 const fileTs = fileName + '.ts';
                 // make interface
-                json2Ts.compileFromFile(`${schemaDir}/${schemaFileName}`, `${typeDir}/${fileTs}`);
+                json2Ts.compileFromFile(`${schemaDir}/${schemaFileName}`, `${typeDir}/${fileTs}`, options || utils_1.default.defaultCompilerOptions);
                 // make model
-                json2Mongoose.compileFromFile(`${schemaDir}/${schemaFileName}`, `${relativePath(modelDir, typeDir)}/${fileName}`, `${modelDir}/${fileTs}`);
+                json2Mongoose.compileFromFile(`${schemaDir}/${schemaFileName}`, `${relativePath(modelDir, typeDir)}/${fileName}`, `${modelDir}/${fileTs}`, options || utils_1.default.defaultCompilerOptions);
             }
             catch (err) {
                 console.error('\x1b[31m%s\x1b[0m', `Processing File : ${schemaDir}/${schemaFileName}\n`, err);

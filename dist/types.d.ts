@@ -1,1 +1,4 @@
-export declare function compileFromFile(jsonSchemaPath: string, outputPath: string): void;
+export interface compilerOptions {
+    headerComment?: string;
+    modelsTemplate?: string;
+}
