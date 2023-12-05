@@ -38,12 +38,12 @@ export function genarate(schemaDir: string, modelDir: string, typeDir: string, o
                 }
 
                 const fileName = schemaFileName.replace('.json', '');
-                const fileTs = fileName + '.ts';
+                const fileNameUpper = fileName.charAt(0).toUpperCase() + fileName.slice(1);
 
                 // make interface
                 json2Ts.compileFromFile(
                     `${schemaDir}/${schemaFileName}`,
-                    `${typeDir}/${fileTs}`,
+                    `${typeDir}/${fileNameUpper}.ts`,
                     options || utils.defaultCompilerOptions
                 );
 
@@ -51,7 +51,7 @@ export function genarate(schemaDir: string, modelDir: string, typeDir: string, o
                 json2Mongoose.compileFromFile(
                     `${schemaDir}/${schemaFileName}`,
                     `${relativePath(modelDir, typeDir)}/${fileName}`,
-                    `${modelDir}/${fileTs}`,
+                    `${modelDir}/${fileNameUpper}Model.ts`,
                     options || utils.defaultCompilerOptions
                 );
             }
