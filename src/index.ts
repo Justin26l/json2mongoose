@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import * as json2Ts from './types_generators';
-import * as json2Mongoose from './models_generator';
+import * as typesGen from './types_generators';
+import * as modelsGen from './models_generator';
 import path from 'path';
 import utils from './utils';
 import { compilerOptions } from './types';
@@ -41,14 +41,14 @@ export function genarate(schemaDir: string, modelDir: string, typeDir: string, o
                 const fileNameUpper = fileName.charAt(0).toUpperCase() + fileName.slice(1);
 
                 // make interface
-                json2Ts.compileFromFile(
+                typesGen.compileFromFile(
                     `${schemaDir}/${schemaFileName}`,
                     `${typeDir}/${fileNameUpper}.ts`,
                     options || utils.defaultCompilerOptions
                 );
 
                 // make model
-                json2Mongoose.compileFromFile(
+                modelsGen.compileFromFile(
                     `${schemaDir}/${schemaFileName}`,
                     `${relativePath(modelDir, typeDir)}/${fileName}`,
                     `${modelDir}/${fileNameUpper}Model.ts`,
@@ -64,5 +64,7 @@ export function genarate(schemaDir: string, modelDir: string, typeDir: string, o
 }
 
 export default {
-    genarate
+    genarate,
+    typesGen,
+    modelsGen,
 };
