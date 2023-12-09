@@ -15,51 +15,49 @@
             "index": true,
             "required": true
         },
-        "userContact": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "phoneNo": {
-                        "type": "string",
-                        "index": true,
-                        "required": true
-                    },
-                    "deleted": {
-                        "type": "integer",
-                        "description": "timestamp"
-                    },
-                    "created": {
-                        "type": "integer",
-                        "description": "timestamp",
-                        "required": true
-                    }
+        "userContact":{
+            "type": "uuid",
+            "required": false,
+            "x-foreignKey": "userContact"
+        },
+        "userAddress": {
+            "type": "object",
+            "required": true,
+            "properties": {
+                "line1": {
+                    "type": "string",
+                    "required": false
+                },
+                "line2": {
+                    "type": "string",
+                    "required": false
+                },
+                "city": {
+                    "type": "string",
+                    "required": true
+                },
+                "state": {
+                    "type": "string",
+                    "required": true
+                },
+                "country": {
+                    "type": "string",
+                    "enum": [
+                        "Option1",
+                        "Option2",
+                        "Option3"
+                    ],
+                    "required": true
+                },
+                "zip": {
+                    "type": "string",
+                    "required": true
                 }
-            },
-            "required": true
+            }
         },
         "isActive": {
             "type": "boolean",
             "required": true
-        },
-        "created": {
-            "type": "integer",
-            "required": true,
-            "description": "timestamp"
-        },
-        "createdBy": {
-            "type": "string",
-            "required": true,
-            "description": "timestamp"
-        },
-        "updated": {
-            "type": "integer",
-            "description": "timestamp"
-        },
-        "updatedBy": {
-            "type": "string",
-            "description": "timestamp"
-        }
-    },
-    "additionalProperties": false
+        }    
+    }
 }

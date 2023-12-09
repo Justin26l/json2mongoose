@@ -16,10 +16,6 @@ function json2MongooseChunk (jsonSchema:{[key:string]:any}) :Object {
     const indexFields = jsonSchema.index || [];
 
     for (const fields in jsonSchema.properties) {
-        // ignore _id
-        if (fields === "_id") {
-            continue;
-        }
 
         const prop = jsonSchema.properties[fields];
         let type: any;
@@ -29,19 +25,22 @@ function json2MongooseChunk (jsonSchema:{[key:string]:any}) :Object {
         }
 
         switch (prop.type.toLowerCase()) {
+            case "uuid":
+                type = "{{Schema.Types.ObjectId}}";
+                break;
             case "string":
-                type = "<<String>>";
+                type = "{{String}}";
                 break;
             case "integer":
             case "float":
             case "number":
-                type = "<<Number>>";
+                type = "{{Number}}";
                 break;
             case "boolean":
-                type = "<<Boolean>>";
+                type = "{{Boolean}}";
                 break;
             case "null":
-                type = "<<null>>";
+                type = "{{null}}";
                 break;
             case "array":
                 type = [json2MongooseChunk({ properties: prop.items.properties })];
@@ -54,16 +53,18 @@ function json2MongooseChunk (jsonSchema:{[key:string]:any}) :Object {
         // loop trough all the properties
         mongooseSchema[fields] = {
             type: type,
+            index: prop.index || indexFields.includes(fields) || false,
+            required:  prop.required || requiredFields.includes(fields) || false,
         };
 
-        if (requiredFields.includes(fields)) {
-            mongooseSchema[fields].required = true;
+        if (prop.default) {
+            mongooseSchema[fields].default = prop.default;
         }
 
-        if ( prop.index || indexFields.includes(fields)) {
-            mongooseSchema[fields].index = true;
+        if ( prop['x-foreignKey'] ) {
+            mongooseSchema[fields].ref = prop['x-foreignKey'];
         }
-
+        
         // for(const key in prop){
         //     // ignore type, properties, items
         //     if (key === "type" || key === "properties" || key === "items") {
@@ -98,8 +99,8 @@ export function json2Mongoose (
     const schema = json2MongooseChunk(jsonSchema);
     const schemaString  = util.inspect(schema, { depth: null });
     
-    // replace all '<<Type>>' with [Function:Type]
-    const mongooseSchema = schemaString.replace(/'<</g, "").replace(/>>'/g, "");
+    // replace all '{{Type}}' with [Function:Type], avoid type to be a string "type".
+    const mongooseSchema = schemaString.replace(/'{{/g, "").replace(/}}'/g, "");
 
     return template.modelsTemplate(interfacePath, interfaceName, documentName, mongooseSchema, options?.headerComment, options?.modelsTemplate);
 }

@@ -37,7 +37,12 @@ the `x-documentConfig.documentName` will only effect on mongoose api.
 ex: docuemt interface, schema, model.  
 
 if you don't wish to drop your hair after some bug came out,  
-match the schema file name with document name.
-## License
+match the schema file name with document name.  
 
+# To Do  
+[] validation of json schema, 
+    - x-foreignKey collection exist  
+    - 
+
+## License
 This project is licensed under the terms of the MIT license. See the [LICENSE](LICENSE) file for details.

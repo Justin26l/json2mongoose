@@ -1,0 +1,27 @@
+{
+    "type": "object",
+    "x-documentConfig": {
+        "documentName": "userContact"
+    },
+    "properties": {
+        "_id": {
+            "type": "string",
+            "format": "uuid",
+            "index": true,
+            "default": {
+                "$uuid": "v4"
+            }
+        },
+        "phoneNo": {
+            "type": "string",
+            "index": true,
+            "required": true
+        },
+        "isActive": {
+            "type": "boolean",
+            "required": true,
+            "default": true
+        }
+    },
+    "additionalProperties": false
+}
