@@ -42,11 +42,8 @@ function json2MongooseChunk(jsonSchema) {
             throw new Error(`prop.type must be string, received [${typeof prop.type}]`);
         }
         switch (prop.type.toLowerCase()) {
-            case "uuid":
-                type = "{{Schema.Types.ObjectId}}";
-                break;
             case "string":
-                type = "{{String}}";
+                type = (prop.format === "uuid") ? "{{Schema.Types.ObjectId}}" : "{{String}}";
                 break;
             case "integer":
             case "float":
@@ -65,11 +62,14 @@ function json2MongooseChunk(jsonSchema) {
             case "object":
                 type = json2MongooseChunk({ properties: prop.properties });
                 break;
+            default:
+                throw new Error(`Unsupported type [${prop.type}]`);
+                break;
         }
         // loop trough all the properties
         mongooseSchema[fields] = {
             type: type,
-            index: prop.index || indexFields.includes(fields) || false,
+            index: prop.index || indexFields.includes(fields) || Boolean(prop['x-foreignKey']) || false,
             required: prop.required || requiredFields.includes(fields) || false,
         };
         if (prop.default) {
