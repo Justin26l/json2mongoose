@@ -16,7 +16,8 @@
             "required": true
         },
         "userContact":{
-            "type": "uuid",
+            "type": "string",
+            "format": "uuid",
             "required": false,
             "x-foreignKey": "userContact"
         },
