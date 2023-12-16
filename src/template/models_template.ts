@@ -6,7 +6,7 @@ export function modelsTemplate(interfacePath:string, interfaceName:string, docum
     if(!template){
         template = `{{headerComment}}
 import { Document, Schema, Model, model } from "mongoose";
-import { {{interfaceName}} } from "<<interfacePath>>";
+import { {{interfaceName}} } from "{{interfacePath}}";
 
 const schemaConfig = {{mongooseSchema}};
 
@@ -18,7 +18,7 @@ export const {{interfaceName}}Model: Model<{{interfaceName}}Document> = model<{{
 
     template = template.replace(/{{headerComment}}/g, headerComment);
     template = template.replace(/{{interfaceName}}/g, interfaceName);
-    template = template.replace(/<<interfacePath>>/g, interfacePath);
+    template = template.replace(/{{interfacePath}}/g, interfacePath);
     template = template.replace(/{{documentName}}/g, documentName);
     template = template.replace(/{{mongooseSchema}}/g, mongooseSchema);
 
