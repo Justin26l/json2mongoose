@@ -31,12 +31,12 @@ const util = __importStar(require("util"));
 const fs = __importStar(require("fs"));
 const template_1 = __importDefault(require("./template"));
 const utils_1 = __importDefault(require("./utils"));
-function json2MongooseChunk(jsonSchema) {
+function json2MongooseChunk(schemaProperties) {
     const mongooseSchema = {};
-    const requiredFields = jsonSchema.required || [];
-    const indexFields = jsonSchema.index || [];
-    for (const fields in jsonSchema.properties) {
-        const prop = jsonSchema.properties[fields];
+    const requiredFields = schemaProperties.required || [];
+    const indexFields = schemaProperties.index || [];
+    for (const fields in schemaProperties.properties) {
+        const prop = schemaProperties.properties[fields];
         let type;
         if (typeof prop.type !== "string") {
             throw new Error(`prop.type must be string, received [${typeof prop.type}]`);
@@ -94,15 +94,14 @@ function json2MongooseChunk(jsonSchema) {
     return mongooseSchema;
 }
 ;
-function json2Mongoose(jsonSchema, interfacePath, schemaFileName, options) {
-    var _a;
+function json2Mongoose(jsonSchema, interfacePath, options) {
     if (!jsonSchema["x-documentConfig"]) {
         throw new Error("( jsonSchema.x-documentConfig : object ) is required");
     }
     ;
     const documentConfig = jsonSchema["x-documentConfig"];
     const documentName = documentConfig.documentName;
-    const interfaceName = ((_a = schemaFileName.at(0)) === null || _a === void 0 ? void 0 : _a.toUpperCase()) + (schemaFileName === null || schemaFileName === void 0 ? void 0 : schemaFileName.slice(1));
+    const interfaceName = documentConfig.interfaceName;
     // convert json to string
     const schema = json2MongooseChunk(jsonSchema);
     const schemaString = util.inspect(schema, { depth: null });
@@ -113,10 +112,9 @@ function json2Mongoose(jsonSchema, interfacePath, schemaFileName, options) {
 exports.json2Mongoose = json2Mongoose;
 function compileFromFile(jsonSchemaPath, modelToInterfacePath, outputPath, options) {
     try {
-        const schemaFileName = (jsonSchemaPath.split("/").pop() || jsonSchemaPath).replace(".json", "");
         const jsonSchemaBuffer = fs.readFileSync(jsonSchemaPath);
         const jsonSchema = JSON.parse(jsonSchemaBuffer.toString());
-        const mongooseSchema = json2Mongoose(jsonSchema, modelToInterfacePath, schemaFileName, options || utils_1.default.defaultCompilerOptions);
+        const mongooseSchema = json2Mongoose(jsonSchema, modelToInterfacePath, options || utils_1.default.defaultCompilerOptions);
         // console.log(mongooseSchema);
         fs.writeFileSync(outputPath, mongooseSchema);
     }
