@@ -1,7 +1,8 @@
 {
     "type": "object",
     "x-documentConfig": {
-        "documentName": "userContact"
+        "documentName": "userContact",
+        "interfaceName": "UserContact"
     },
     "properties": {
         "_id": {
