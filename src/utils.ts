@@ -1,16 +1,30 @@
 // read package.json and get version
 import fs from "fs";
+import childProcess from "child_process";
 
 export function getPackageInfo() :{
     version: string,
     author: string,
 } {
-    const packageJson = fs.readFileSync("./package.json", "utf8");
-    const packageJsonObject = JSON.parse(packageJson);
+
+    let globalPackages: any = {};
+    // get local npm package.json
+    childProcess.exec('npm list -g --json', (err, stdout, stderr) => {
+        if (err) {
+            console.log('\x1b[41m%s\x1b[0m', '[ERROR]', 'Failed to execute command: npm list -g --json', err);
+            return;
+        };
+        
+        try {
+            globalPackages = JSON.parse(stdout);
+        } catch (err) {
+            console.error('Failed to parse JSON', err);
+        }
+    });
 
     return {
-        version: packageJsonObject.dependencies?.json2mongoose?.replace('^','') || "[unknown version]",
-        author: packageJsonObject.author || "justin26l",
+        version: globalPackages.dependencies['very-express'] || "[unknown version]",
+        author: globalPackages.author || "justin26l",
     };
 }
 

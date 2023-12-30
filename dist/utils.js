@@ -4,15 +4,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defaultCompilerOptions = exports.getGenaratorHeaderComment = exports.getPackageInfo = void 0;
-// read package.json and get version
-const fs_1 = __importDefault(require("fs"));
+const child_process_1 = __importDefault(require("child_process"));
 function getPackageInfo() {
-    var _a, _b;
-    const packageJson = fs_1.default.readFileSync("./package.json", "utf8");
-    const packageJsonObject = JSON.parse(packageJson);
+    let globalPackages = {};
+    // get local npm package.json
+    child_process_1.default.exec('npm list -g --json', (err, stdout, stderr) => {
+        if (err) {
+            console.log('\x1b[41m%s\x1b[0m', '[ERROR]', 'Failed to execute command: npm list -g --json', err);
+            return;
+        }
+        ;
+        try {
+            globalPackages = JSON.parse(stdout);
+        }
+        catch (err) {
+            console.error('Failed to parse JSON', err);
+        }
+    });
     return {
-        version: ((_b = (_a = packageJsonObject.dependencies) === null || _a === void 0 ? void 0 : _a.json2mongoose) === null || _b === void 0 ? void 0 : _b.replace('^', '')) || "[unknown version]",
-        author: packageJsonObject.author || "justin26l",
+        version: globalPackages.dependencies['very-express'] || "[unknown version]",
+        author: globalPackages.author || "justin26l",
     };
 }
 exports.getPackageInfo = getPackageInfo;
