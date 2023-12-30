@@ -6,24 +6,17 @@ export function getPackageInfo() :{
     version: string,
     author: string,
 } {
-
     let globalPackages: any = {};
-    // get local npm package.json
-    childProcess.exec('npm list -g --json', (err, stdout, stderr) => {
-        if (err) {
-            console.log('\x1b[41m%s\x1b[0m', '[ERROR]', 'Failed to execute command: npm list -g --json', err);
-            return;
-        };
-        
-        try {
-            globalPackages = JSON.parse(stdout);
-        } catch (err) {
-            console.error('Failed to parse JSON', err);
-        }
-    });
+    // get local npm package dependencies with npm -g list
+    try {
+        globalPackages = JSON.parse(childProcess.execSync('npm -g list --json',).toString());
+        // console.log(globalPackages)
+    } catch (error) {
+        console.log('\x1b[41m%s\x1b[0m', '[ERROR]', 'Failed to execute command: npm list -g --json', error);
+    }
 
     return {
-        version: globalPackages.dependencies['very-express'] || "[unknown version]",
+        version: globalPackages.dependencies['very-express'].version || "[unknown version]",
         author: globalPackages.author || "justin26l",
     };
 }
