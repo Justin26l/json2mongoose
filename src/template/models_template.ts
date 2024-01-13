@@ -8,10 +8,9 @@ export function modelsTemplate(interfacePath:string, interfaceName:string, docum
 import { Document, Schema, Model, model } from "mongoose";
 import { {{interfaceName}} } from "{{interfacePath}}";
 
-const schemaConfig = {{mongooseSchema}};
+export const {{interfaceName}}Schema: Schema = new Schema({{mongooseSchema}});
 
-export interface {{interfaceName}}Document extends {{interfaceName}}, Document<string> {};
-export const {{interfaceName}}Schema: Schema = new Schema(schemaConfig);
+export interface {{interfaceName}}Document extends {{interfaceName}}, Document<string> {_id: string};
 export const {{interfaceName}}Model: Model<{{interfaceName}}Document> = model<{{interfaceName}}Document>("{{documentName}}", {{interfaceName}}Schema);
 `;
     };

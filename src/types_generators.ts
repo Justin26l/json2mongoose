@@ -19,7 +19,7 @@ export function compileFromFile(jsonSchemaPath: string, outputPath: string, opti
                 printWidth: 120,
                 semi: true,
                 singleQuote: false,
-                tabWidth: 2,
+                tabWidth: 4,
                 trailingComma: 'none',
                 useTabs: false,
             },

@@ -4,14 +4,16 @@ import template from "./template";
 import utils from "./utils";
 import * as types from "./types";
 
-function json2MongooseChunk (schemaProperties:types.jsonSchema['properties']) :Object {
+function json2MongooseChunk(schemaProperties: types.jsonSchema['properties']): Object {
 
-    const mongooseSchema : {[key:string]: {
-        type: any,
-        required?: boolean,
-        index?: boolean,
-        [key:string]: string | number | boolean | undefined | Object,
-    }} = {};
+    const mongooseSchema: {
+        [key: string]: {
+            type: any,
+            required?: boolean,
+            index?: boolean,
+            [key: string]: string | number | boolean | undefined | Object,
+        }
+    } = {};
     const requiredFields = schemaProperties.required || [];
     const indexFields = schemaProperties.index || [];
 
@@ -20,7 +22,7 @@ function json2MongooseChunk (schemaProperties:types.jsonSchema['properties']) :O
         const prop = schemaProperties.properties[fields];
         let type: any;
 
-        if(typeof prop.type !== "string"){
+        if (typeof prop.type !== "string") {
             throw new Error(`prop.type must be string, received [${typeof prop.type}]`);
         }
 
@@ -43,7 +45,11 @@ function json2MongooseChunk (schemaProperties:types.jsonSchema['properties']) :O
                 type = [json2MongooseChunk({ properties: prop.items.properties })];
                 break;
             case "object":
-                type = json2MongooseChunk({ properties: prop.properties });
+                const subSchema = JSON.stringify(json2MongooseChunk({ properties: prop.properties }))
+                    .replace(/,"/g,',')
+                    .replace(/":/g,':')
+                    .replace(/{"/g,'{');
+                type = `{{new Schema(${subSchema})}}`;
                 break;
             default:
                 throw new Error(`Unsupported type [${prop.type}]`);
@@ -54,17 +60,17 @@ function json2MongooseChunk (schemaProperties:types.jsonSchema['properties']) :O
         mongooseSchema[fields] = {
             type: type,
             index: prop.index || indexFields.includes(fields) || Boolean(prop['x-foreignKey']) || false,
-            required:  prop.required || requiredFields.includes(fields) || false,
+            required: prop.required || requiredFields.includes(fields) || false,
         };
 
         if (prop.default) {
             mongooseSchema[fields].default = prop.default;
         }
 
-        if ( prop['x-foreignKey'] ) {
+        if (prop['x-foreignKey']) {
             mongooseSchema[fields].ref = prop['x-foreignKey'];
         }
-        
+
         // for(const key in prop){
         //     // ignore type, properties, items
         //     if (key === "type" || key === "properties" || key === "items") {
@@ -82,12 +88,12 @@ function json2MongooseChunk (schemaProperties:types.jsonSchema['properties']) :O
     return mongooseSchema;
 };
 
-export function json2Mongoose (
-    jsonSchema:{[key:string]:any}, 
+export function json2Mongoose(
+    jsonSchema: { [key: string]: any },
     interfacePath: string,
     options?: types.compilerOptions
-) {
-    if(!jsonSchema["x-documentConfig"]){
+): string {
+    if (!jsonSchema["x-documentConfig"]) {
         throw new Error("( jsonSchema.x-documentConfig : object ) is required");
     };
     const documentConfig = jsonSchema["x-documentConfig"];
@@ -96,16 +102,16 @@ export function json2Mongoose (
 
     // convert json to string
     const schema = json2MongooseChunk(jsonSchema);
-    const schemaString  = util.inspect(schema, { depth: null });
-    
-    // replace all '{{Type}}' with [Function:Type], avoid type to be a string "type".
-    const mongooseSchema = schemaString.replace(/'{{/g, "").replace(/}}'/g, "");
+    const schemaString = util.inspect(schema, { depth: null });
+
+    // replace all '{{Type}}' to Type, avoid it to be a string with quote "Type".
+    const mongooseSchema = schemaString.replace(/'{{/g, "").replace(/}}'/g, "").replace(/"{{/g, "").replace(/}}"/g, "");
 
     return template.modelsTemplate(interfacePath, interfaceName, documentName, mongooseSchema, options?.headerComment, options?.modelsTemplate);
 }
 
-export function compileFromFile(jsonSchemaPath:string, modelToInterfacePath:string, outputPath:string, options?:types.compilerOptions){
-    try{
+export function compileFromFile(jsonSchemaPath: string, modelToInterfacePath: string, outputPath: string, options?: types.compilerOptions) {
+    try {
         const jsonSchemaBuffer = fs.readFileSync(jsonSchemaPath);
         const jsonSchema = JSON.parse(jsonSchemaBuffer.toString());
         const mongooseSchema = json2Mongoose(jsonSchema, modelToInterfacePath, options || utils.defaultCompilerOptions);
@@ -113,7 +119,7 @@ export function compileFromFile(jsonSchemaPath:string, modelToInterfacePath:stri
 
         fs.writeFileSync(outputPath, mongooseSchema);
     }
-    catch(err :any){
+    catch (err: any) {
         throw new Error(`Processing File [${jsonSchemaPath}] :\n ${(err.message || err)}`);
     }
 }
