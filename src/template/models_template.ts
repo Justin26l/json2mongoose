@@ -16,7 +16,7 @@ export const {{interfaceName}}Model: Model<{{interfaceName}}Document> = model<{{
 `;
     }
 
-      template = template.replace(/{{headerComment}}/g, headerComment);
+    template = template.replace(/{{headerComment}}/g, headerComment);
     template = template.replace(/{{interfaceName}}/g, interfaceName);
     template = template.replace(/{{interfacePath}}/g, interfacePath);
     template = template.replace(/{{documentName}}/g, documentName);

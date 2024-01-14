@@ -9,8 +9,8 @@
     "json2mongoose": "dist/cli.js"
   },
   "scripts": {
-    "build": "npm run test && tsc -p tsconfig.json",
-    "dev": "ts-node src/cli.ts ./jsonSchema ./output",
+    "build": "tsc -p tsconfig.json",
+    "dev": "npm run test && ts-node src/cli.ts ./jsonSchema ./output",
     "generate": "node dist/cli.js ./jsonSchema ./output",
     "test": "eslint ./src --ext .ts --fix"
   },
