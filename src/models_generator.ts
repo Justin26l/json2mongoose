@@ -44,14 +44,9 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"]): o
         case "array":
             type = [json2MongooseChunk({ properties: prop.items.properties })];
             break;
-        case "object":{
-            const subSchema = JSON.stringify(json2MongooseChunk({ properties: prop.properties }))
-                .replace(/,"/g,",")
-                .replace(/":/g,":")
-                .replace(/{"/g,"{");
-            type = `{{new Schema(${subSchema})}}`;
+        case "object":
+            type = json2MongooseChunk({ properties: prop.properties });
             break;
-        }
         default:
             throw new Error(`Unsupported type [${prop.type}]`);
             break;
