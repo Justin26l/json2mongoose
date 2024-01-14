@@ -1,6 +1,6 @@
 {
   "name": "json2mongoose",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "genarate mongoose ts files from jsonSchema",
   "author": "justin26l",
   "license": "MIT",
