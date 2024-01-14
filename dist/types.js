@@ -12,4 +12,3 @@ var method;
     method["head"] = "head";
     method["trace"] = "trace";
 })(method || (exports.method = method = {}));
-;

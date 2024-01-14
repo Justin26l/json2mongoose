@@ -9,10 +9,10 @@
     "json2mongoose": "dist/cli.js"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "npm run test && tsc -p tsconfig.json",
     "dev": "ts-node src/cli.ts ./jsonSchema ./output",
     "generate": "node dist/cli.js ./jsonSchema ./output",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "eslint ./src --ext .ts --fix"
   },
   "repository": {
     "type": "git",
@@ -25,5 +25,15 @@
   "dependencies": {
     "@types/mongoose": "^5.11.97",
     "json-schema-to-typescript": "^13.1.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/parser": "^6.18.1",
+    "eslint": "^8.56.0",
+    "eslint-config-standard-with-typescript": "^43.0.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-promise": "^6.1.1",
+    "typescript": "^5.3.3"
   }
 }

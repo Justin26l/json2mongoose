@@ -1,29 +1,28 @@
 // read package.json and get version
-import fs from "fs";
 import childProcess from "child_process";
 
 export function getPackageInfo() :{
     version: string,
     author: string,
-} {
+    } {
     let globalPackages: any = {};
     // get local npm package dependencies with npm -g list
     try {
-        globalPackages = JSON.parse(childProcess.execSync('npm -g list --json',).toString());
+        globalPackages = JSON.parse(childProcess.execSync("npm -g list --json",).toString());
         // console.log(globalPackages)
     } catch (error) {
-        console.log('\x1b[41m%s\x1b[0m', '[ERROR]', 'Failed to execute command: npm list -g --json', error);
+        console.log("\x1b[41m%s\x1b[0m", "[ERROR]", "Failed to execute command: npm list -g --json", error);
     }
 
     return {
-        version: globalPackages.dependencies['very-express'].version || "[unknown version]",
+        version: globalPackages.dependencies["very-express"].version || "[unknown version]",
         author: globalPackages.author || "justin26l",
     };
 }
 
 export function getGenaratorHeaderComment(depedencies?:string) :string{
     if(!depedencies){
-        depedencies = '';
+        depedencies = "";
     }
     const packageInfo = getPackageInfo();
     return`/* eslint-disable */

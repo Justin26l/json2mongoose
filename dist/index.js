@@ -33,7 +33,7 @@ const modelsGen = __importStar(require("./models_generator"));
 const path_1 = __importDefault(require("path"));
 const utils_1 = __importDefault(require("./utils"));
 const relativePath = (fromPath, toPath) => {
-    return path_1.default.relative(fromPath, toPath).replace(/\\/g, '/');
+    return path_1.default.relative(fromPath, toPath).replace(/\\/g, "/");
 };
 function genarate(schemaDir, modelDir, typeDir, options) {
     fs.readdir(schemaDir, (err, files) => {
@@ -55,10 +55,10 @@ function genarate(schemaDir, modelDir, typeDir, options) {
         files.forEach((schemaFileName) => {
             try {
                 // ignore non json files
-                if (!schemaFileName.endsWith('.json')) {
+                if (!schemaFileName.endsWith(".json")) {
                     return;
                 }
-                const fileName = schemaFileName.replace('.json', '');
+                const fileName = schemaFileName.replace(".json", "");
                 const fileNameUpper = fileName.charAt(0).toUpperCase() + fileName.slice(1);
                 // make interface
                 typesGen.compileFromFile(`${schemaDir}/${schemaFileName}`, `${typeDir}/${fileNameUpper}.ts`, options || utils_1.default.defaultCompilerOptions);
@@ -66,7 +66,7 @@ function genarate(schemaDir, modelDir, typeDir, options) {
                 modelsGen.compileFromFile(`${schemaDir}/${schemaFileName}`, `${relativePath(modelDir, typeDir)}/${fileName}`, `${modelDir}/${fileNameUpper}Model.ts`, options || utils_1.default.defaultCompilerOptions);
             }
             catch (err) {
-                console.error('\x1b[31m%s\x1b[0m', `Processing File : ${schemaDir}/${schemaFileName}\n`, err);
+                console.error("\x1b[31m%s\x1b[0m", `Processing File : ${schemaDir}/${schemaFileName}\n`, err);
             }
         });
     });

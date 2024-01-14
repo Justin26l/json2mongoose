@@ -31,7 +31,7 @@ function compileFromFile(jsonSchemaPath, outputPath, options) {
         .compileFromFile(jsonSchemaPath, {
         $refOptions: {},
         additionalProperties: true, // TODO: default to empty schema (as per spec) instead
-        bannerComment: (options === null || options === void 0 ? void 0 : options.headerComment) || '',
+        bannerComment: (options === null || options === void 0 ? void 0 : options.headerComment) || "",
         cwd: process.cwd(),
         declareExternallyReferenced: true,
         enableConstEnums: true,
@@ -44,8 +44,8 @@ function compileFromFile(jsonSchemaPath, outputPath, options) {
             printWidth: 120,
             semi: true,
             singleQuote: false,
-            tabWidth: 2,
-            trailingComma: 'none',
+            tabWidth: 4,
+            trailingComma: "none",
             useTabs: false,
         },
         unreachableDefinitions: false,

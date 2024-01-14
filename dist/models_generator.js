@@ -59,9 +59,14 @@ function json2MongooseChunk(schemaProperties) {
             case "array":
                 type = [json2MongooseChunk({ properties: prop.items.properties })];
                 break;
-            case "object":
-                type = json2MongooseChunk({ properties: prop.properties });
+            case "object": {
+                const subSchema = JSON.stringify(json2MongooseChunk({ properties: prop.properties }))
+                    .replace(/,"/g, ",")
+                    .replace(/":/g, ":")
+                    .replace(/{"/g, "{");
+                type = `{{new Schema(${subSchema})}}`;
                 break;
+            }
             default:
                 throw new Error(`Unsupported type [${prop.type}]`);
                 break;
@@ -69,14 +74,14 @@ function json2MongooseChunk(schemaProperties) {
         // loop trough all the properties
         mongooseSchema[fields] = {
             type: type,
-            index: prop.index || indexFields.includes(fields) || Boolean(prop['x-foreignKey']) || false,
+            index: prop.index || indexFields.includes(fields) || Boolean(prop["x-foreignKey"]) || false,
             required: prop.required || requiredFields.includes(fields) || false,
         };
         if (prop.default) {
             mongooseSchema[fields].default = prop.default;
         }
-        if (prop['x-foreignKey']) {
-            mongooseSchema[fields].ref = prop['x-foreignKey'];
+        if (prop["x-foreignKey"]) {
+            mongooseSchema[fields].ref = prop["x-foreignKey"];
         }
         // for(const key in prop){
         //     // ignore type, properties, items
@@ -93,20 +98,18 @@ function json2MongooseChunk(schemaProperties) {
     // console.log(mongooseSchema);
     return mongooseSchema;
 }
-;
 function json2Mongoose(jsonSchema, interfacePath, options) {
     if (!jsonSchema["x-documentConfig"]) {
         throw new Error("( jsonSchema.x-documentConfig : object ) is required");
     }
-    ;
     const documentConfig = jsonSchema["x-documentConfig"];
     const documentName = documentConfig.documentName;
     const interfaceName = documentConfig.interfaceName;
     // convert json to string
     const schema = json2MongooseChunk(jsonSchema);
     const schemaString = util.inspect(schema, { depth: null });
-    // replace all '{{Type}}' with [Function:Type], avoid type to be a string "type".
-    const mongooseSchema = schemaString.replace(/'{{/g, "").replace(/}}'/g, "");
+    // replace all '{{Type}}' to Type, avoid it to be a string with quote "Type".
+    const mongooseSchema = schemaString.replace(/'{{/g, "").replace(/}}'/g, "").replace(/"{{/g, "").replace(/}}"/g, "");
     return template_1.default.modelsTemplate(interfacePath, interfaceName, documentName, mongooseSchema, options === null || options === void 0 ? void 0 : options.headerComment, options === null || options === void 0 ? void 0 : options.modelsTemplate);
 }
 exports.json2Mongoose = json2Mongoose;

@@ -1,4 +1,4 @@
-import { modelsTemplate } from './models_template';
+import { modelsTemplate } from "./models_template";
 declare const _default: {
     modelsTemplate: typeof modelsTemplate;
 };

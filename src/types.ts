@@ -6,7 +6,7 @@ export interface compilerOptions {
 
 export interface jsonSchema {
     type: string;
-    'x-documentConfig': documentConfig;
+    "x-documentConfig": documentConfig;
     properties: {
         [key: string]: {
             type: string;
@@ -25,19 +25,19 @@ export interface jsonSchema {
 
 export interface documentConfig {
     documentName: string;
-    documentType?: 'primary' | 'secondary';
+    documentType?: "primary" | "secondary";
     interfaceName: string;
     keyPrefix?: string;
     method: method[]
 }
 
 export enum method {
-    get     = 'get',
-    post    = 'post',
-    put     = 'put',
-    patch   = 'patch',
-    delete  = 'delete',
-    options = 'options',
-    head    = 'head',
-    trace   = 'trace'
-};
+    get     = "get",
+    post    = "post",
+    put     = "put",
+    patch   = "patch",
+    delete  = "delete",
+    options = "options",
+    head    = "head",
+    trace   = "trace"
+}

@@ -5,7 +5,7 @@ export interface compilerOptions {
 }
 export interface jsonSchema {
     type: string;
-    'x-documentConfig': documentConfig;
+    "x-documentConfig": documentConfig;
     properties: {
         [key: string]: {
             type: string;
@@ -23,7 +23,7 @@ export interface jsonSchema {
 }
 export interface documentConfig {
     documentName: string;
-    documentType?: 'primary' | 'secondary';
+    documentType?: "primary" | "secondary";
     interfaceName: string;
     keyPrefix?: string;
     method: method[];

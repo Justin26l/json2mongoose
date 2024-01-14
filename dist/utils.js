@@ -4,26 +4,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defaultCompilerOptions = exports.getGenaratorHeaderComment = exports.getPackageInfo = void 0;
+// read package.json and get version
 const child_process_1 = __importDefault(require("child_process"));
 function getPackageInfo() {
     let globalPackages = {};
     // get local npm package dependencies with npm -g list
     try {
-        globalPackages = JSON.parse(child_process_1.default.execSync('npm -g list --json').toString());
+        globalPackages = JSON.parse(child_process_1.default.execSync("npm -g list --json").toString());
         // console.log(globalPackages)
     }
     catch (error) {
-        console.log('\x1b[41m%s\x1b[0m', '[ERROR]', 'Failed to execute command: npm list -g --json', error);
+        console.log("\x1b[41m%s\x1b[0m", "[ERROR]", "Failed to execute command: npm list -g --json", error);
     }
     return {
-        version: globalPackages.dependencies['very-express'].version || "[unknown version]",
+        version: globalPackages.dependencies["very-express"].version || "[unknown version]",
         author: globalPackages.author || "justin26l",
     };
 }
 exports.getPackageInfo = getPackageInfo;
 function getGenaratorHeaderComment(depedencies) {
     if (!depedencies) {
-        depedencies = '';
+        depedencies = "";
     }
     const packageInfo = getPackageInfo();
     return `/* eslint-disable */

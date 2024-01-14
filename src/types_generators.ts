@@ -6,7 +6,7 @@ export function compileFromFile(jsonSchemaPath: string, outputPath: string, opti
         .compileFromFile(jsonSchemaPath, {
             $refOptions: {},
             additionalProperties: true, // TODO: default to empty schema (as per spec) instead
-            bannerComment: options?.headerComment||'',
+            bannerComment: options?.headerComment||"",
             cwd: process.cwd(),
             declareExternallyReferenced: true,
             enableConstEnums: true,
@@ -20,7 +20,7 @@ export function compileFromFile(jsonSchemaPath: string, outputPath: string, opti
                 semi: true,
                 singleQuote: false,
                 tabWidth: 4,
-                trailingComma: 'none',
+                trailingComma: "none",
                 useTabs: false,
             },
             unreachableDefinitions: false,
