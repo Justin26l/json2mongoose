@@ -41,3 +41,12 @@ export enum method {
     head    = "head",
     trace   = "trace"
 }
+
+export interface mongooseSchemaDefinition {
+    [key: string]: mongooseSchemaDefinition | {
+        type: any,
+        required?: boolean,
+        index?: boolean,
+        [key: string]: string | number | boolean | undefined | object,
+    }
+}

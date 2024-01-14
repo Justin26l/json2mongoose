@@ -4,16 +4,9 @@ import template from "./template";
 import utils from "./utils";
 import * as types from "./types";
 
-function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"]): object {
+function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"]): types.mongooseSchemaDefinition {
 
-    const mongooseSchema: {
-        [key: string]: {
-            type: any,
-            required?: boolean,
-            index?: boolean,
-            [key: string]: string | number | boolean | undefined | object,
-        }
-    } = {};
+    const mongooseSchema: types.mongooseSchemaDefinition = {};
     const requiredFields = schemaProperties.required || [];
     const indexFields = schemaProperties.index || [];
 
@@ -45,42 +38,35 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"]): o
             type = [json2MongooseChunk({ properties: prop.items.properties })];
             break;
         case "object":
-            type = json2MongooseChunk({ properties: prop.properties });
             break;
         default:
             throw new Error(`Unsupported type [${prop.type}]`);
             break;
         }
 
-        // loop trough all the properties
-        mongooseSchema[fields] = {
-            type: type,
-            index: prop.index || indexFields.includes(fields) || Boolean(prop["x-foreignKey"]) || false,
-            required: prop.required || requiredFields.includes(fields) || false,
-        };
-
-        if (prop.default) {
-            mongooseSchema[fields].default = prop.default;
+        if(prop.type === "object"){
+            console.log();
+            mongooseSchema[fields] = json2MongooseChunk({ properties: prop.properties });
+            continue;
         }
+        else{
+            // loop trough all the properties
+            mongooseSchema[fields] = {
+                type: type,
+                index: prop.index || indexFields.includes(fields) || Boolean(prop["x-foreignKey"]) || false,
+                required: prop.required || requiredFields.includes(fields) || false,
+            };
 
-        if (prop["x-foreignKey"]) {
-            mongooseSchema[fields].ref = prop["x-foreignKey"];
+            if (prop.default) {
+                mongooseSchema[fields].default = prop.default;
+            }
+
+            if (prop["x-foreignKey"]) {
+                mongooseSchema[fields].ref = prop["x-foreignKey"];
+            }
         }
-
-        // for(const key in prop){
-        //     // ignore type, properties, items
-        //     if (key === "type" || key === "properties" || key === "items") {
-        //         continue;
-        //     }
-        //     // ignore x-*
-        //     if (key.startsWith("x-")) {
-        //         continue;
-        //     }
-        //     mongooseSchema[fields][key] = prop[key];
-        // }
     }
 
-    // console.log(mongooseSchema);
     return mongooseSchema;
 }
 
