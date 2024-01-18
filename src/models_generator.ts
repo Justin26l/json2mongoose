@@ -21,7 +21,7 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"]): t
 
         switch (prop.type.toLowerCase()) {
         case "string":
-            type = (prop.format === "uuid") ? "{{Schema.Types.ObjectId}}" : "{{String}}";
+            type = "{{String}}";
             break;
         case "integer":
         case "float":

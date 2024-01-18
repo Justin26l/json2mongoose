@@ -10,7 +10,7 @@ import { {{interfaceName}} } from "{{interfacePath}}";
 
 export const {{interfaceName}}SchemaDefinition: SchemaDefinition = {{mongooseSchema}};
 
-export interface {{interfaceName}}Document extends {{interfaceName}}, Document<string> {_id: string};
+export interface {{interfaceName}}Document extends {{interfaceName}}, Document { _id: string };
 export const {{interfaceName}}Schema: Schema<{{interfaceName}}Document> = new Schema({{interfaceName}}SchemaDefinition);
 export const {{interfaceName}}Model: Model<{{interfaceName}}Document> = model<{{interfaceName}}Document>("{{documentName}}", {{interfaceName}}Schema);
 `;
