@@ -4,7 +4,7 @@ import template from "./template";
 import utils from "./utils";
 import * as types from "./types";
 
-function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"]): types.mongooseSchemaDefinition {
+function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], use_id?:boolean ): types.mongooseSchemaDefinition {
 
     const mongooseSchema: types.mongooseSchemaDefinition = {};
     const requiredFields = schemaProperties.required || [];
@@ -13,11 +13,16 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"]): t
     for (const fields in schemaProperties.properties) {
 
         const prop = schemaProperties.properties[fields];
-        let type: any;
+
+        if ( !use_id && fields === "_id" ){
+            continue;
+        }
 
         if (typeof prop.type !== "string") {
             throw new Error(`prop.type must be string, received [${typeof prop.type}]`);
         }
+        
+        let type: any;
 
         switch (prop.type.toLowerCase()) {
         case "string":
@@ -83,7 +88,7 @@ export function json2Mongoose(
     const interfaceName = documentConfig.interfaceName;
 
     // convert json to string
-    const schema = json2MongooseChunk(jsonSchema);
+    const schema = json2MongooseChunk(jsonSchema, options?.use_id);
     const schemaString = util.inspect(schema, { depth: null });
 
     // replace all '{{Type}}' to Type, avoid it to be a string with quote "Type".
