@@ -40,6 +40,7 @@ export function getGenaratorHeaderComment(depedencies?:string) :string{
 
 export const defaultCompilerOptions = {
     headerComment: getGenaratorHeaderComment(),
+    use_id: false,
 };
 
 export default {

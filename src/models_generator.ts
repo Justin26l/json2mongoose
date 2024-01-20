@@ -4,7 +4,7 @@ import template from "./template";
 import utils from "./utils";
 import * as types from "./types";
 
-function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], use_id?:boolean ): types.mongooseSchemaDefinition {
+function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], compilerOptions:types.compilerOptions ): types.mongooseSchemaDefinition {
 
     const mongooseSchema: types.mongooseSchemaDefinition = {};
     const requiredFields = schemaProperties.required || [];
@@ -14,7 +14,7 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], us
 
         const prop = schemaProperties.properties[fields];
 
-        if ( !use_id && fields === "_id" ){
+        if ( !compilerOptions.use_id && fields === "_id" ){
             continue;
         }
 
@@ -40,7 +40,7 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], us
             type = "{{null}}";
             break;
         case "array":
-            type = [json2MongooseChunk({ properties: prop.items.properties })];
+            type = [json2MongooseChunk({ properties: prop.items.properties }, compilerOptions)];
             break;
         case "object":
             break;
@@ -51,7 +51,7 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], us
 
         if(prop.type === "object"){
             console.log();
-            mongooseSchema[fields] = json2MongooseChunk({ properties: prop.properties });
+            mongooseSchema[fields] = json2MongooseChunk({ properties: prop.properties }, compilerOptions);
             continue;
         }
         else{
@@ -78,7 +78,7 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], us
 export function json2Mongoose(
     jsonSchema: { [key: string]: any },
     interfacePath: string,
-    options?: types.compilerOptions
+    compilerOptions?: types.compilerOptions
 ): string {
     if (!jsonSchema["x-documentConfig"]) {
         throw new Error("( jsonSchema.x-documentConfig : object ) is required");
@@ -88,20 +88,20 @@ export function json2Mongoose(
     const interfaceName = documentConfig.interfaceName;
 
     // convert json to string
-    const schema = json2MongooseChunk(jsonSchema, options?.use_id);
+    const schema = json2MongooseChunk(jsonSchema, compilerOptions || utils.defaultCompilerOptions);
     const schemaString = util.inspect(schema, { depth: null });
 
     // replace all '{{Type}}' to Type, avoid it to be a string with quote "Type".
     const mongooseSchema = schemaString.replace(/'{{/g, "").replace(/}}'/g, "").replace(/"{{/g, "").replace(/}}"/g, "");
 
-    return template.modelsTemplate(interfacePath, interfaceName, documentName, mongooseSchema, options?.headerComment, options?.modelsTemplate);
+    return template.modelsTemplate(interfacePath, interfaceName, documentName, mongooseSchema, compilerOptions || utils.defaultCompilerOptions);
 }
 
-export function compileFromFile(jsonSchemaPath: string, modelToInterfacePath: string, outputPath: string, options?: types.compilerOptions) {
+export function compileFromFile(jsonSchemaPath: string, modelToInterfacePath: string, outputPath: string, compilerOptions?: types.compilerOptions) {
     try {
         const jsonSchemaBuffer = fs.readFileSync(jsonSchemaPath);
         const jsonSchema = JSON.parse(jsonSchemaBuffer.toString());
-        const mongooseSchema = json2Mongoose(jsonSchema, modelToInterfacePath, options || utils.defaultCompilerOptions);
+        const mongooseSchema = json2Mongoose(jsonSchema, modelToInterfacePath, compilerOptions || utils.defaultCompilerOptions);
         // console.log(mongooseSchema);
 
         fs.writeFileSync(outputPath, mongooseSchema);
