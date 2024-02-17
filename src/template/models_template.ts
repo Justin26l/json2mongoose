@@ -25,7 +25,7 @@ export const {{interfaceName}}Model: Model<{{interfaceName}}Document> = model<{{
     template = template.replace(/{{interfaceName}}/g, interfaceName);
     template = template.replace(/{{interfacePath}}/g, interfacePath);
     template = template.replace(/{{mongooseSchema}}/g, mongooseSchema);
-    template = template.replace(/{{use_id}}/g, compilerOptions.use_id ? "" : "_id?: string;");
+    template = template.replace(/{{use_id}}/g, compilerOptions.use_id ? "" : "_id: string;");
     template = template.replace(/{{documentName}}/g, documentName);
 
     return template;
