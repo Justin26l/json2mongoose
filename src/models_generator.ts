@@ -66,9 +66,9 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
                 mongooseSchema[fields].default = prop.default;
             }
 
-            if (prop["x-foreignKey"]) {
-                mongooseSchema[fields].ref = prop["x-foreignKey"];
-            }
+            // if (prop["x-foreignKey"]) {
+            //     mongooseSchema[fields].ref = prop["x-foreignKey"];
+            // }
         }
     }
 
