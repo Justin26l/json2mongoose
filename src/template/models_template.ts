@@ -15,7 +15,7 @@ import { {{interfaceName}} } from "{{interfacePath}}";
 
 export const {{interfaceName}}SchemaDefinition: SchemaDefinition = {{mongooseSchema}};
 
-export interface {{interfaceName}}Document extends {{interfaceName}}, Document { {{use_id}} };
+export interface {{interfaceName}}Document extends Omit<{{interfaceName}}, '_id'>, Document { {{use_id}} };
 export const {{interfaceName}}Schema: Schema<{{interfaceName}}Document> = new Schema({{interfaceName}}SchemaDefinition);
 export const {{interfaceName}}Model: Model<{{interfaceName}}Document> = model<{{interfaceName}}Document>("{{documentName}}", {{interfaceName}}Schema);
 `;
