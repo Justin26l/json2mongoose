@@ -9,19 +9,22 @@ export interface jsonSchema {
     type: string;
     "x-documentConfig": documentConfig;
     properties: {
-        [key: string]: {
-            type: string;
-            format?: string;
-            index?: boolean;
-            required?: boolean;
-            description?: string;
-            example?: any;
-            [key: string]: any
-        }
+        [key: string]: SchemaItem
     };
     required?: string[];
     index?: string[];
     [key: string]: any;
+}
+
+export interface SchemaItem {
+    type: string;
+    format?: string;
+    index?: boolean;
+    items?: SchemaItem;
+    required?: boolean;
+    description?: string;
+    example?: any;
+    [key: string]: any
 }
 
 export interface documentConfig {
@@ -33,14 +36,14 @@ export interface documentConfig {
 }
 
 export enum method {
-    get     = "get",
-    post    = "post",
-    put     = "put",
-    patch   = "patch",
-    delete  = "delete",
+    get = "get",
+    post = "post",
+    put = "put",
+    patch = "patch",
+    delete = "delete",
     options = "options",
-    head    = "head",
-    trace   = "trace"
+    head = "head",
+    trace = "trace"
 }
 
 export interface mongooseSchemaDefinition {
@@ -50,4 +53,9 @@ export interface mongooseSchemaDefinition {
         index?: boolean,
         [key: string]: string | number | boolean | undefined | object,
     }
+}
+
+export interface hookData {
+    onCreate : { [key: string]: string },
+    onUpdate: { [key: string]: string }
 }

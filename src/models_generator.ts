@@ -4,6 +4,70 @@ import template from "./template";
 import utils from "./utils";
 import * as types from "./types";
 
+function hookValue(type:string){
+    switch(type.toLocaleLowerCase()){
+        case "unix":
+        case "unixtime":
+        case "unix-time":
+            return "new Date().getTime()";
+            break;
+
+        case "date":
+            return "new Date().toISOString().slice(0, 10)";
+            break;
+
+        case "time":
+            return "new Date().toISOString().slice(11, 19)";
+            break;
+
+        case "datetime":
+        case "date-time":
+            return "new Date().toISOString()";
+            break;
+
+        default:
+            return type;
+            break;
+    }
+}
+
+function makeHook(fieldName: string|undefined, schemaItem: types.SchemaItem): types.hookData {
+    const result: types.hookData = {
+        onCreate: {},
+        onUpdate: {}
+    };
+
+    const props = schemaItem.type === "object" ? schemaItem.properties : schemaItem.items?.type === "object" ? schemaItem.items.properties : schemaItem;
+    // if SchemaItem.type array or object, then run recursively
+    if (schemaItem.type === "object" || schemaItem.items?.type === "object") {
+        Object.keys(props).forEach((key) => {
+            const val = props[key];
+            const subObj = makeHook(key, val);
+
+            // merge subObj into result with object key prefix by "key"
+            Object.keys(subObj.onCreate).forEach((subKey: string) => {
+                const nestedFieldsName = [fieldName, subKey].filter((x)=>x).join(".");
+                result.onCreate[nestedFieldsName] = subObj.onCreate[subKey];
+            });
+            Object.keys(subObj.onUpdate).forEach((subKey: string) => {
+                const nestedFieldsName = [fieldName, subKey].filter((x)=>x).join(".");
+                result.onUpdate[nestedFieldsName] = subObj.onUpdate[subKey];
+            });
+
+        });
+    }
+    else if (fieldName){
+        if (schemaItem["x-onCreateValue"]) {
+            result.onCreate[fieldName] = hookValue(schemaItem["x-onCreateValue"]);
+        }
+        if (schemaItem["x-onUpdateValue"]) {
+            result.onUpdate[fieldName] = hookValue(schemaItem["x-onUpdateValue"]);
+        }
+    }
+    
+    return result;
+}
+
 function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], compilerOptions:types.compilerOptions ): types.mongooseSchemaDefinition {
 
     const mongooseSchema: types.mongooseSchemaDefinition = {};
@@ -19,12 +83,12 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
         }
 
         if (typeof prop.type !== "string") {
-            throw new Error(`prop.type must be string, received [${typeof prop.type}]`);
+            throw new Error(`prop.type must be a string, received [${typeof prop!.type}]`);
         }
         
         let type: any;
 
-        switch (prop.type.toLowerCase()) {
+        switch (prop!.type.toLowerCase()) {
         case "string":
             type = "{{String}}";
             break;
@@ -76,7 +140,7 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
 }
 
 export function json2Mongoose(
-    jsonSchema: { [key: string]: any },
+    jsonSchema: types.jsonSchema,
     interfacePath: string,
     compilerOptions?: types.compilerOptions
 ): string {
@@ -94,7 +158,10 @@ export function json2Mongoose(
     // replace all '{{Type}}' to Type, avoid it to be a string with quote "Type".
     const mongooseSchema = schemaString.replace(/'{{/g, "").replace(/}}'/g, "").replace(/"{{/g, "").replace(/}}"/g, "");
 
-    return template.modelsTemplate(interfacePath, interfaceName, documentName, mongooseSchema, compilerOptions || utils.defaultCompilerOptions);
+    // get hook resource
+    const hookData = makeHook(undefined, jsonSchema as types.SchemaItem);
+
+    return template.modelsTemplate(interfacePath, interfaceName, documentName, mongooseSchema, hookData, compilerOptions || utils.defaultCompilerOptions);
 }
 
 export function compileFromFile(jsonSchemaPath: string, modelToInterfacePath: string, outputPath: string, compilerOptions?: types.compilerOptions) {
