@@ -6,28 +6,28 @@ import * as types from "./types";
 
 function hookValue(type:string){
     switch(type.toLocaleLowerCase()){
-        case "unix":
-        case "unixtime":
-        case "unix-time":
-            return "new Date().getTime()";
-            break;
+    case "unix":
+    case "unixtime":
+    case "unix-time":
+        return "new Date().getTime()";
+        break;
 
-        case "date":
-            return "new Date().toISOString().slice(0, 10)";
-            break;
+    case "date":
+        return "new Date().toISOString().slice(0, 10)";
+        break;
 
-        case "time":
-            return "new Date().toISOString().slice(11, 19)";
-            break;
+    case "time":
+        return "new Date().toISOString().slice(11, 19)";
+        break;
 
-        case "datetime":
-        case "date-time":
-            return "new Date().toISOString()";
-            break;
+    case "datetime":
+    case "date-time":
+        return "new Date().toISOString()";
+        break;
 
-        default:
-            return type;
-            break;
+    default:
+        return type;
+        break;
     }
 }
 
@@ -166,6 +166,7 @@ export function json2Mongoose(
 
 export function compileFromFile(jsonSchemaPath: string, modelToInterfacePath: string, outputPath: string, compilerOptions?: types.compilerOptions) {
     try {
+        console.log(">> json2mongoose : processing to model :", jsonSchemaPath);
         const jsonSchemaBuffer = fs.readFileSync(jsonSchemaPath);
         const jsonSchema = JSON.parse(jsonSchemaBuffer.toString());
         const mongooseSchema = json2Mongoose(jsonSchema, modelToInterfacePath, compilerOptions || utils.defaultCompilerOptions);

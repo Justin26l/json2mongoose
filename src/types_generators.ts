@@ -1,7 +1,9 @@
 import * as jsonToTypescript from "json-schema-to-typescript";
 import * as fs from "fs";
 import { compilerOptions } from "./types";
+
 export function compileFromFile(jsonSchemaPath: string, outputPath: string, options?: compilerOptions) {
+    console.log(">> json2mongoose : processing to type : ", jsonSchemaPath);
     jsonToTypescript
         .compileFromFile(jsonSchemaPath, {
             $refOptions: {},
