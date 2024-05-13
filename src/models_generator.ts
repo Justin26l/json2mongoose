@@ -164,7 +164,7 @@ export function json2Mongoose(
     return template.modelsTemplate(interfacePath, interfaceName, documentName, mongooseSchema, hookData, compilerOptions || utils.defaultCompilerOptions);
 }
 
-export function compileFromFile(jsonSchemaPath: string, modelToInterfacePath: string, outputPath: string, compilerOptions?: types.compilerOptions) {
+export async function compileFromFile(jsonSchemaPath: string, modelToInterfacePath: string, outputPath: string, compilerOptions?: types.compilerOptions) {
     try {
         console.log(">> json2mongoose : processing to model :", jsonSchemaPath);
         const jsonSchemaBuffer = fs.readFileSync(jsonSchemaPath);
@@ -173,6 +173,7 @@ export function compileFromFile(jsonSchemaPath: string, modelToInterfacePath: st
         // console.log(mongooseSchema);
 
         fs.writeFileSync(outputPath, mongooseSchema);
+        return mongooseSchema;
     }
     catch (err: any) {
         throw new Error(`Processing File [${jsonSchemaPath}] :\n ${(err.message || err)}`);

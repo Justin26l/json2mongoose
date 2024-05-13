@@ -2,87 +2,70 @@
     "type": "object",
     "x-documentConfig": {
         "documentName": "user",
-        "interfaceName": "User"
+        "interfaceName": "User",
+        "methods": [
+            "get",
+            "getList",
+            "post",
+            "patch"
+        ]
     },
     "properties": {
-        "created":{
-            "type": "number",
-            "x-onCreateValue": "unix-time"
-        },
-        "update":{
-            "type": "number",
-            "x-onUpdateValue": "unix-time"
-        },
         "_id": {
             "type": "string",
-            "format": "uuid",
             "index": true
+        },
+        "active": {
+            "type": "boolean",
+            "default": true,
+            "required": true
+        },
+        "authProvider": {
+            "type": "string"
+        },
+        "authId": {
+            "type": "string",
+            "index": true
+        },
+        "email": {
+            "type": "string",
+            "format": "email",
+            "index": true,
+            "required": true
         },
         "name": {
             "type": "string",
             "maxLength": 64,
-            "index": true,
             "required": true
         },
-        "userContact":{
+        "locale": {
+            "type": "string",
+            "maxLength": 8,
+            "required": true
+        },
+        "roles": {
             "type": "array",
+            "x-vexData": "role",
             "items": {
-                "type": "object",
-                "properties": {
-                    "contactType": {
-                        "type": "string",
-                        "enum": [
-                            "Option1",
-                            "Option2",
-                            "Option3"
-                        ],
-                        "required": true
-                    },
-                    "value": {
-                        "type": "string",
-                        "required": true
-                    }
-                }
-            }
-        },
-        "userAddress": {
-            "type": "object",
+                "type": "string",
+                "required": true,
+                "enum": [
+                    "visitor",
+                    "member",
+                    "admin"
+                ]
+            },
             "required": true,
-            "properties": {
-                "line1": {
-                    "type": "string",
-                    "required": false
-                },
-                "line2": {
-                    "type": "string",
-                    "required": false
-                },
-                "city": {
-                    "type": "string",
-                    "required": true
-                },
-                "state": {
-                    "type": "string",
-                    "required": true
-                },
-                "country": {
-                    "type": "string",
-                    "enum": [
-                        "Option1",
-                        "Option2",
-                        "Option3"
-                    ],
-                    "required": true
-                },
-                "zip": {
-                    "type": "string",
-                    "required": true
-                }
-            }
-        },
-        "isActive": {
-            "type": "boolean",
-            "required": true
-        }    
-    }
+            "default": [
+                "visitor"
+            ]
+        }
+    },
+    "required": [
+        "active",
+        "email",
+        "name",
+        "locale",
+        "roles"
+    ]
 }

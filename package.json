@@ -10,9 +10,9 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "dev": "npm run test && ts-node src/cli.ts ./jsonSchema ./output",
-    "generate": "node dist/cli.js ./jsonSchema ./output",
-    "test": "eslint ./src --ext .ts --fix"
+    "dev": "ts-node src/cli.ts ./jsonSchema ./output",
+    "test": "node dist/cli.js ./jsonSchema ./output",
+    "lint": "eslint ./src --ext .ts --fix"
   },
   "repository": {
     "type": "git",

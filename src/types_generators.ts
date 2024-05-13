@@ -2,9 +2,9 @@ import * as jsonToTypescript from "json-schema-to-typescript";
 import * as fs from "fs";
 import { compilerOptions } from "./types";
 
-export function compileFromFile(jsonSchemaPath: string, outputPath: string, options?: compilerOptions) {
+export async function compileFromFile(jsonSchemaPath: string, outputPath: string, options?: compilerOptions) {
     console.log(">> json2mongoose : processing to type : ", jsonSchemaPath);
-    jsonToTypescript
+    await jsonToTypescript
         .compileFromFile(jsonSchemaPath, {
             $refOptions: {},
             additionalProperties: true, // TODO: default to empty schema (as per spec) instead
@@ -30,5 +30,6 @@ export function compileFromFile(jsonSchemaPath: string, outputPath: string, opti
         })
         .then((ts: string) => {
             fs.writeFileSync(outputPath, ts);
+            return ts;
         });
 }
