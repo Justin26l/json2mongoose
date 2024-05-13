@@ -4,7 +4,7 @@ import { compilerOptions } from "./types";
 
 export async function compileFromFile(jsonSchemaPath: string, outputPath: string, options?: compilerOptions) {
     console.log(">> json2mongoose : processing to type : ", jsonSchemaPath);
-    await jsonToTypescript
+    return await jsonToTypescript
         .compileFromFile(jsonSchemaPath, {
             $refOptions: {},
             additionalProperties: true, // TODO: default to empty schema (as per spec) instead
