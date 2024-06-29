@@ -149,7 +149,6 @@ export function json2Mongoose(
     }
     const documentConfig = jsonSchema["x-documentConfig"];
     const documentName = documentConfig.documentName;
-    const interfaceName = documentConfig.interfaceName;
 
     // convert json to string
     const schema = json2MongooseChunk(jsonSchema, compilerOptions || utils.defaultCompilerOptions);
@@ -161,7 +160,7 @@ export function json2Mongoose(
     // get hook resource
     const hookData = makeHook(undefined, jsonSchema as types.SchemaItem);
 
-    return template.modelsTemplate(interfacePath, interfaceName, documentName, mongooseSchema, hookData, compilerOptions || utils.defaultCompilerOptions);
+    return template.modelsTemplate(interfacePath, documentName, mongooseSchema, hookData, compilerOptions || utils.defaultCompilerOptions);
 }
 
 export async function compileFromFile(jsonSchemaPath: string, modelToInterfacePath: string, outputPath: string, compilerOptions?: types.compilerOptions) {

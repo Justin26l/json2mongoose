@@ -29,9 +29,8 @@ export interface SchemaItem {
 
 export interface documentConfig {
     documentName: string;
-    documentType?: "primary" | "secondary";
-    interfaceName: string;
-    keyPrefix?: string;
+    // documentType?: "primary" | "secondary";
+    // keyPrefix?: string;
     method: method[]
 }
 
