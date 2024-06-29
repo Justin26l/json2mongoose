@@ -2,6 +2,7 @@ import * as util from "util";
 import * as fs from "fs";
 import template from "./template";
 import utils from "./utils";
+import log from "./logger";
 import * as types from "./types";
 
 function hookValue(type:string){
@@ -165,12 +166,13 @@ export function json2Mongoose(
 
 export async function compileFromFile(jsonSchemaPath: string, modelToInterfacePath: string, outputPath: string, compilerOptions?: types.compilerOptions) {
     try {
-        console.log(">> json2mongoose : processing to model :", jsonSchemaPath);
+        
+        log.process(`Model : ${jsonSchemaPath} > ${outputPath}`);
         const jsonSchemaBuffer = fs.readFileSync(jsonSchemaPath);
         const jsonSchema = JSON.parse(jsonSchemaBuffer.toString());
         const mongooseSchema = json2Mongoose(jsonSchema, modelToInterfacePath, compilerOptions || utils.defaultCompilerOptions);
         // console.log(mongooseSchema);
-
+        
         fs.writeFileSync(outputPath, mongooseSchema);
         return mongooseSchema;
     }
