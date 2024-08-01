@@ -4,9 +4,9 @@
   "description": "genarate mongoose ts files from jsonSchema",
   "author": "justin26l",
   "license": "MIT",
-  "main": "./dist/index.js",
+  "main": "./dist/src/index.js",
   "bin": {
-    "json2mongoose": "dist/cli.js"
+    "json2mongoose": "./dist/src/cli.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
