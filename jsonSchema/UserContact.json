@@ -1,0 +1,31 @@
+{
+    "type": "object",
+    "x-documentConfig": {
+        "methods": [
+            "get",
+            "getList",
+            "post",
+            "put",
+            "patch",
+            "delete"
+        ],
+        "documentName": "UserContact"
+    },
+    "properties": {
+        "_id": {
+            "type": "string",
+            "x-format": "ObjectId",
+            "index": true
+        },
+        "phoneNo": {
+            "type": "string",
+            "index": true
+        },
+        "isActive": {
+            "type": "boolean",
+            "default": true
+        }
+    },
+    "additionalProperties": false,
+    "required": []
+}

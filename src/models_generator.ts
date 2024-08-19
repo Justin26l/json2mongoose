@@ -91,7 +91,14 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
 
         switch (prop!.type.toLowerCase()) {
         case "string":
-            type = "{{String}}";
+            if ( prop['x-foreignKey'] ){
+                const collection = prop['x-foreignKey'];
+                const fkType = prop['x-format'] == 'ObjectId' ? 'Schema.Types.ObjectId' : "String";
+                type =  `{{[{ type: ${fkType}, ref: '${collection}' }]}}`;
+            }
+            else{
+                type = "{{String}}";
+            };
             break;
         case "integer":
         case "float":

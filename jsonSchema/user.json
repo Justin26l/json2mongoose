@@ -58,6 +58,11 @@
             "default": [
                 "visitor"
             ]
+        },
+        "contact":{
+            "type": "string",
+            "x-format": "ObjectId",
+            "x-foreignKey": "UserContact"
         }
     },
     "required": [
