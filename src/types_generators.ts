@@ -30,6 +30,8 @@ export async function compileFromFile(jsonSchemaPath: string, outputPath: string
             unknownAny: true,
         })
         .then((ts: string) => {
+            // todo : add custom type condition
+            // if have fk then need to be "ObjectId | SchemaType"
             fs.writeFileSync(outputPath, ts);
             return ts;
         });
