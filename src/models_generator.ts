@@ -82,54 +82,66 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
         if ( !compilerOptions.use_id && fields === "_id" ){
             continue;
         }
+        console.log('>>>', [schemaProperties.properties, fields, prop, typeof prop.type]);
 
         if (typeof prop.type !== "string") {
-            throw new Error(`prop.type must be a string, received [${typeof prop!.type}]`);
+            // throw new Error(`prop.type must be a string, received [${typeof prop!.type}]`);
+            // console.log('>>>', [schemaProperties.properties, fields, prop, typeof prop.type]);
+            continue;
         }
         
-        let type: any;
+        const setType = (type: string, prop: types.SchemaItem) => {
+            let typetTemplate: any;
 
-        switch (prop!.type.toLowerCase()) {
-        case "string":
-            if ( prop['x-foreignKey'] ){
-                const collection = prop['x-foreignKey'];
-                const fkType = prop['x-format'] == 'ObjectId' ? 'Schema.Types.ObjectId' : "String";
-                type =  `{{[{ type: ${fkType}, ref: '${collection}' }]}}`;
+            switch (type.toLowerCase()) {
+            case "string":
+                if ( prop['x-foreignKey'] ){
+                    const collection = prop['x-foreignKey'];
+                    const fkType = prop['x-format'] == 'ObjectId' ? 'Schema.Types.ObjectId' : "String";
+                    typetTemplate =  `{{[{ type: ${fkType}, ref: '${collection}' }]}}`;
+                }
+                else{
+                    typetTemplate = "{{String}}";
+                };
+                break;
+            case "integer":
+            case "float":
+            case "number":
+                typetTemplate = "{{Number}}";
+                break;
+            case "boolean":
+                typetTemplate = "{{Boolean}}";
+                break;
+            case "null":
+                typetTemplate = "{{null}}";
+                break;
+            case "array":
+                console.log('ARR LOOP ========');
+                if(prop.items){
+                    typetTemplate = [setType(prop.items.type, prop.items)];
+                }
+                break;
+            case "object":
+                break;
+            default:
+                throw new Error(`Unsupported type [${prop.type}]`);
+                break;
             }
-            else{
-                type = "{{String}}";
-            };
-            break;
-        case "integer":
-        case "float":
-        case "number":
-            type = "{{Number}}";
-            break;
-        case "boolean":
-            type = "{{Boolean}}";
-            break;
-        case "null":
-            type = "{{null}}";
-            break;
-        case "array":
-            type = [json2MongooseChunk({ properties: prop.items.properties }, compilerOptions)];
-            break;
-        case "object":
-            break;
-        default:
-            throw new Error(`Unsupported type [${prop.type}]`);
-            break;
-        }
+
+            return typetTemplate;
+        };
+
+        const typetTemplate = setType(prop.type, prop);
 
         if(prop.type === "object"){
-            console.log();
-            mongooseSchema[fields] = json2MongooseChunk({ properties: prop.properties }, compilerOptions);
+            console.log('OBJ LOOP ========');
+            mongooseSchema[fields] = json2MongooseChunk(prop, compilerOptions);
             continue;
         }
         else{
             // loop trough all the properties
             mongooseSchema[fields] = {
-                type: type,
+                type: typetTemplate,
                 index: prop.index || indexFields.includes(fields) || Boolean(prop["x-foreignKey"]) || false,
                 required: prop.required || requiredFields.includes(fields) || false,
             };
