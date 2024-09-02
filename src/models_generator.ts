@@ -82,7 +82,6 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
         if ( !compilerOptions.use_id && fields === "_id" ){
             continue;
         }
-        console.log('>>>', [schemaProperties.properties, fields, prop, typeof prop.type]);
 
         if (typeof prop.type !== "string") {
             // throw new Error(`prop.type must be a string, received [${typeof prop!.type}]`);
@@ -116,7 +115,6 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
                 typetTemplate = "{{null}}";
                 break;
             case "array":
-                console.log('ARR LOOP ========');
                 if(prop.items){
                     typetTemplate = [setType(prop.items.type, prop.items)];
                 }
@@ -134,7 +132,6 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
         const typetTemplate = setType(prop.type, prop);
 
         if(prop.type === "object"){
-            console.log('OBJ LOOP ========');
             mongooseSchema[fields] = json2MongooseChunk(prop, compilerOptions);
             continue;
         }
@@ -150,9 +147,9 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
                 mongooseSchema[fields].default = prop.default;
             }
 
-            // if (prop["x-foreignKey"]) {
-            //     mongooseSchema[fields].ref = prop["x-foreignKey"];
-            // }
+            if (prop["x-foreignKey"] || prop.items?.["x-foreignKey"]) {
+                mongooseSchema[fields].ref = prop["x-foreignKey"] || prop.items["x-foreignKey"];
+            }
         }
     }
 
