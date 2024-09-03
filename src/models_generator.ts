@@ -97,7 +97,7 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
                 if ( prop['x-foreignKey'] ){
                     const collection = prop['x-foreignKey'];
                     const fkType = prop['x-format'] == 'ObjectId' ? 'Schema.Types.ObjectId' : "String";
-                    typetTemplate =  `{{[{ type: ${fkType}, ref: '${collection}' }]}}`;
+                    typetTemplate =  `{{{ type: ${fkType}, ref: '${collection}' }}}`;
                 }
                 else{
                     typetTemplate = "{{String}}";
@@ -120,6 +120,7 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
                 }
                 break;
             case "object":
+                typetTemplate = json2MongooseChunk(prop, compilerOptions);
                 break;
             default:
                 throw new Error(`Unsupported type [${prop.type}]`);
@@ -131,25 +132,17 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
 
         const typetTemplate = setType(prop.type, prop);
 
-        if(prop.type === "object"){
-            mongooseSchema[fields] = json2MongooseChunk(prop, compilerOptions);
-            continue;
+        // loop trough all the properties
+        mongooseSchema[fields] = {
+            type: typetTemplate,
+            index: prop.index || indexFields.includes(fields) || Boolean(prop["x-foreignKey"]) || false,
+            required: prop.required || requiredFields.includes(fields) || false,
         }
-        else{
-            // loop trough all the properties
-            mongooseSchema[fields] = {
-                type: typetTemplate,
-                index: prop.index || indexFields.includes(fields) || Boolean(prop["x-foreignKey"]) || false,
-                required: prop.required || requiredFields.includes(fields) || false,
-            };
-
-            if (prop.default) {
-                mongooseSchema[fields].default = prop.default;
-            }
-
-            if (prop["x-foreignKey"] || prop.items?.["x-foreignKey"]) {
-                mongooseSchema[fields].ref = prop["x-foreignKey"] || prop.items["x-foreignKey"];
-            }
+        if (prop.default) {
+            mongooseSchema[fields].default = prop.default;
+        }
+        if (prop["x-foreignKey"] || prop.items?.["x-foreignKey"]) {
+            mongooseSchema[fields].ref = prop["x-foreignKey"] || prop.items["x-foreignKey"];
         }
     }
 
