@@ -90,54 +90,52 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
         }
 
         const setType = (type: string, prop: types.SchemaItem) => {
-            let typetTemplate: any;
+            let typeObj: any = {
+                type: 'String',
+                index: (prop.index || Boolean(prop["x-foreignKey"])) || indexFields.includes(fields) || false,
+                required: prop.required || requiredFields.includes(fields) || false,
+            };
 
             switch (type.toLowerCase()) {
                 case "string":
                     if (prop['x-foreignKey']) {
                         const collection = prop['x-foreignKey'];
                         const fkType = prop['x-format'] == 'ObjectId' ? 'Schema.Types.ObjectId' : "String";
-                        typetTemplate = `{{{ type: ${fkType}, ref: '${collection}' }}}`;
+                        typeObj.type = `{{${fkType}}}`;
                     }
                     else {
-                        typetTemplate = "{{String}}";
+                        typeObj.type = "{{String}}";
                     };
                     break;
                 case "integer":
                 case "float":
                 case "number":
-                    typetTemplate = "{{Number}}";
+                    typeObj.type = "{{Number}}";
                     break;
                 case "boolean":
-                    typetTemplate = "{{Boolean}}";
+                    typeObj.type = "{{Boolean}}";
                     break;
                 case "null":
-                    typetTemplate = "{{null}}";
+                    typeObj.type = "{{null}}";
                     break;
                 case "array":
                     if (prop.items) {
-                        typetTemplate = [setType(prop.items.type, prop.items)];
+                        typeObj.type = [setType(prop.items.type, prop.items).type];
                     }
                     break;
                 case "object":
-                    typetTemplate = json2MongooseChunk(prop, compilerOptions);
+                    typeObj.type = json2MongooseChunk(prop, compilerOptions);
                     break;
                 default:
                     throw new Error(`Unsupported type [${prop.type}]`);
                     break;
             }
 
-            return typetTemplate;
+            return typeObj;
         };
 
-        const typetTemplate = setType(prop.type, prop);
-
         // loop trough all the properties
-        mongooseSchema[fields] = {
-            type: typetTemplate,
-            index: prop.index || indexFields.includes(fields) || Boolean(prop["x-foreignKey"]) || false,
-            required: prop.required || requiredFields.includes(fields) || false,
-        }
+        mongooseSchema[fields] = setType(prop.type, prop);;
         if (prop.default) {
             mongooseSchema[fields].default = prop.default;
         }
