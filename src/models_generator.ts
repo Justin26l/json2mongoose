@@ -5,34 +5,34 @@ import utils from "./utils";
 import log from "./logger";
 import * as types from "./types";
 
-function hookValue(type:string){
-    switch(type.toLocaleLowerCase()){
-    case "unix":
-    case "unixtime":
-    case "unix-time":
-        return "new Date().getTime()";
-        break;
+function hookValue(type: string) {
+    switch (type.toLocaleLowerCase()) {
+        case "unix":
+        case "unixtime":
+        case "unix-time":
+            return "new Date().getTime()";
+            break;
 
-    case "date":
-        return "new Date().toISOString().slice(0, 10)";
-        break;
+        case "date":
+            return "new Date().toISOString().slice(0, 10)";
+            break;
 
-    case "time":
-        return "new Date().toISOString().slice(11, 19)";
-        break;
+        case "time":
+            return "new Date().toISOString().slice(11, 19)";
+            break;
 
-    case "datetime":
-    case "date-time":
-        return "new Date().toISOString()";
-        break;
+        case "datetime":
+        case "date-time":
+            return "new Date().toISOString()";
+            break;
 
-    default:
-        return type;
-        break;
+        default:
+            return type;
+            break;
     }
 }
 
-function makeHook(fieldName: string|undefined, schemaItem: types.SchemaItem): types.hookData {
+function makeHook(fieldName: string | undefined, schemaItem: types.SchemaItem): types.hookData {
     const result: types.hookData = {
         onCreate: {},
         onUpdate: {}
@@ -47,17 +47,17 @@ function makeHook(fieldName: string|undefined, schemaItem: types.SchemaItem): ty
 
             // merge subObj into result with object key prefix by "key"
             Object.keys(subObj.onCreate).forEach((subKey: string) => {
-                const nestedFieldsName = [fieldName, subKey].filter((x)=>x).join(".");
+                const nestedFieldsName = [fieldName, subKey].filter((x) => x).join(".");
                 result.onCreate[nestedFieldsName] = subObj.onCreate[subKey];
             });
             Object.keys(subObj.onUpdate).forEach((subKey: string) => {
-                const nestedFieldsName = [fieldName, subKey].filter((x)=>x).join(".");
+                const nestedFieldsName = [fieldName, subKey].filter((x) => x).join(".");
                 result.onUpdate[nestedFieldsName] = subObj.onUpdate[subKey];
             });
 
         });
     }
-    else if (fieldName){
+    else if (fieldName) {
         if (schemaItem["x-onCreateValue"]) {
             result.onCreate[fieldName] = hookValue(schemaItem["x-onCreateValue"]);
         }
@@ -65,11 +65,11 @@ function makeHook(fieldName: string|undefined, schemaItem: types.SchemaItem): ty
             result.onUpdate[fieldName] = hookValue(schemaItem["x-onUpdateValue"]);
         }
     }
-    
+
     return result;
 }
 
-function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], compilerOptions:types.compilerOptions ): types.mongooseSchemaDefinition {
+function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], compilerOptions: types.compilerOptions): types.mongooseSchemaDefinition {
 
     const mongooseSchema: types.mongooseSchemaDefinition = {};
     const requiredFields = schemaProperties.required || [];
@@ -79,7 +79,7 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
 
         const prop = schemaProperties.properties[fields];
 
-        if ( !compilerOptions.use_id && fields === "_id" ){
+        if (!compilerOptions.use_id && fields === "_id") {
             continue;
         }
 
@@ -88,43 +88,43 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
             // console.log('>>>', [schemaProperties.properties, fields, prop, typeof prop.type]);
             continue;
         }
-        
+
         const setType = (type: string, prop: types.SchemaItem) => {
             let typetTemplate: any;
 
             switch (type.toLowerCase()) {
-            case "string":
-                if ( prop['x-foreignKey'] ){
-                    const collection = prop['x-foreignKey'];
-                    const fkType = prop['x-format'] == 'ObjectId' ? 'Schema.Types.ObjectId' : "String";
-                    typetTemplate =  `{{{ type: ${fkType}, ref: '${collection}' }}}`;
-                }
-                else{
-                    typetTemplate = "{{String}}";
-                };
-                break;
-            case "integer":
-            case "float":
-            case "number":
-                typetTemplate = "{{Number}}";
-                break;
-            case "boolean":
-                typetTemplate = "{{Boolean}}";
-                break;
-            case "null":
-                typetTemplate = "{{null}}";
-                break;
-            case "array":
-                if(prop.items){
-                    typetTemplate = [setType(prop.items.type, prop.items)];
-                }
-                break;
-            case "object":
-                typetTemplate = json2MongooseChunk(prop, compilerOptions);
-                break;
-            default:
-                throw new Error(`Unsupported type [${prop.type}]`);
-                break;
+                case "string":
+                    if (prop['x-foreignKey']) {
+                        const collection = prop['x-foreignKey'];
+                        const fkType = prop['x-format'] == 'ObjectId' ? 'Schema.Types.ObjectId' : "String";
+                        typetTemplate = `{{{ type: ${fkType}, ref: '${collection}' }}}`;
+                    }
+                    else {
+                        typetTemplate = "{{String}}";
+                    };
+                    break;
+                case "integer":
+                case "float":
+                case "number":
+                    typetTemplate = "{{Number}}";
+                    break;
+                case "boolean":
+                    typetTemplate = "{{Boolean}}";
+                    break;
+                case "null":
+                    typetTemplate = "{{null}}";
+                    break;
+                case "array":
+                    if (prop.items) {
+                        typetTemplate = [setType(prop.items.type, prop.items)];
+                    }
+                    break;
+                case "object":
+                    typetTemplate = json2MongooseChunk(prop, compilerOptions);
+                    break;
+                default:
+                    throw new Error(`Unsupported type [${prop.type}]`);
+                    break;
             }
 
             return typetTemplate;
@@ -175,13 +175,13 @@ export function json2Mongoose(
 
 export async function compileFromFile(jsonSchemaPath: string, modelToInterfacePath: string, outputPath: string, compilerOptions?: types.compilerOptions) {
     try {
-        
+
         log.process(`Model : ${jsonSchemaPath} > ${outputPath}`);
         const jsonSchemaBuffer = fs.readFileSync(jsonSchemaPath);
         const jsonSchema = JSON.parse(jsonSchemaBuffer.toString());
         const mongooseSchema = json2Mongoose(jsonSchema, modelToInterfacePath, compilerOptions || utils.defaultCompilerOptions);
         // console.log(mongooseSchema);
-        
+
         fs.writeFileSync(outputPath, mongooseSchema);
         return mongooseSchema;
     }
