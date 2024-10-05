@@ -6,8 +6,6 @@ import { compilerOptions } from "./types";
 export async function compileFromFile(jsonSchemaPath: string, outputPath: string, options?: compilerOptions) {
     log.process(`Type : ${jsonSchemaPath} > ${outputPath}`);
 
-    const jsonSchema = JSON.parse(fs.readFileSync(jsonSchemaPath, "utf8"));
-
     return await jsonToTypescript
         .compileFromFile(jsonSchemaPath, {
             $refOptions: {},
@@ -18,7 +16,7 @@ export async function compileFromFile(jsonSchemaPath: string, outputPath: string
             enableConstEnums: true,
             format: true,
             ignoreMinAndMaxItems: false,
-            maxItems: 20,
+            maxItems: -1,
             strictIndexSignatures: false,
             style: {
                 bracketSpacing: false,
@@ -33,9 +31,8 @@ export async function compileFromFile(jsonSchemaPath: string, outputPath: string
             unknownAny: true,
         })
         .then((ts: string) => {
-
+            const jsonSchema = JSON.parse(fs.readFileSync(jsonSchemaPath, "utf8"));
             const fkTs = updateFkTypes(ts, jsonSchema);
-
             fs.writeFileSync(outputPath, fkTs);
             return ts;
         });
