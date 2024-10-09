@@ -9,7 +9,7 @@ export async function compileFromFile(jsonSchemaPath: string, outputPath: string
     return await jsonToTypescript
         .compileFromFile(jsonSchemaPath, {
             $refOptions: {},
-            additionalProperties: true, // TODO: default to empty schema (as per spec) instead
+            additionalProperties: false, // TODO: default to empty schema (as per spec) instead
             bannerComment: options?.headerComment || "",
             cwd: process.cwd(),
             declareExternallyReferenced: true,
