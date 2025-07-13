@@ -11,7 +11,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "ts-node src/cli.ts ./jsonSchema ./output",
-    "test": "node dist/cli.js ./jsonSchema ./output",
+    "start": "node dist/cli.js ./jsonSchema ./output",
     "lint": "eslint ./src --ext .ts --fix"
   },
   "repository": {
