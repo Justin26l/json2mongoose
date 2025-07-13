@@ -15,6 +15,17 @@
             "x-format": "ObjectId",
             "index": true
         },
+        "email": {
+            "type": "string",
+            "format": "email",
+            "index": true,
+            "required": true
+        },
+        "username": {
+            "type": "string",
+            "maxLength": 64,
+            "required": true
+        },
         "authProfiles": {
             "type": "array",
             "items": {
@@ -31,25 +42,42 @@
                 }
             }
         },
-        "email": {
-            "type": "string",
-            "format": "email",
-            "index": true,
-            "required": true
+        "information": {
+            "type": "object",
+            "properties": {
+                "firstName": {
+                    "type": "string",
+                    "maxLength": 32
+                },
+                "lastName": {
+                    "type": "string",
+                    "maxLength": 32
+                },
+                "avatarUrl": {
+                    "type": "string",
+                    "format": "uri"
+                }
+            }
         },
-        "name": {
-            "type": "string",
-            "maxLength": 64,
-            "required": true
-        },
-        "active": {
-            "type": "boolean",
-            "default": true,
-            "required": true
-        },
-        "locale": {
-            "type": "string",
-            "maxLength": 8
+        "settings":{
+            "type": "object",
+            "properties": {
+                "lang": {
+                    "type": "string",
+                    "maxLength": 2
+                },
+                "tz": {
+                    "type": "string",
+                    "pattern": "^([+-]\\d{1,2}|Z)$",
+                    "maxLength": 3,
+                    "minLength": 2,
+                    "default": "+8"
+                }
+            },
+            "default": {
+                "lang": "en",
+                "tz": "+8"
+            }
         },
         "roles": {
             "type": "array",
@@ -73,6 +101,11 @@
                 "member",
                 "admin"
             ]
+        },
+        "active": {
+            "type": "boolean",
+            "default": true,
+            "required": true
         }
     },
     "required": [

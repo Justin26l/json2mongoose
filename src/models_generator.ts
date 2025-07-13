@@ -99,7 +99,6 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
             switch (type.toLowerCase()) {
                 case "string":
                     if (prop['x-foreignKey']) {
-                        const collection = prop['x-foreignKey'];
                         const fkType = prop['x-format'] == 'ObjectId' ? 'Schema.Types.ObjectId' : "String";
                         typeObj.type = `{{${fkType}}}`;
                     }
@@ -124,7 +123,7 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
                     }
                     break;
                 case "object":
-                    typeObj.type = json2MongooseChunk(prop, compilerOptions);
+                    typeObj = json2MongooseChunk(prop, compilerOptions);
                     break;
                 default:
                     throw new Error(`Unsupported type [${prop.type}]`);
