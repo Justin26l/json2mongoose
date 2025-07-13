@@ -89,7 +89,24 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
             continue;
         }
 
-        const setType = (type: string, prop: types.SchemaItem) => {
+        const toTypeClass = (typename: string) => {
+            switch (typename.toLowerCase()) {
+                case "string":
+                    return "{{String}}";
+                case "integer":
+                case "float":
+                case "number":
+                    return "{{Number}}";
+                case "boolean":
+                    return "{{Boolean}}";
+                case "null":
+                    return "{{null}}";
+                default:
+                    throw new Error(`Unsupported type [${typename}]`);
+            }
+        }
+
+        const setType = (fieldName: string,  type: string, prop: types.SchemaItem) => {
             let typeObj: any = {
                 type: 'String',
                 index: (prop.index || Boolean(prop["x-foreignKey"])) || indexFields.includes(fields) || false,
@@ -119,7 +136,22 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
                     break;
                 case "array":
                     if (prop.items) {
-                        typeObj.type = [setType(prop.items.type, prop.items).type];
+                        if (prop.items.type == "object"){
+                            if(!prop.items.properties) {
+                                throw new Error(`"${fieldName}" Array items as object must have properties defined !`);
+                            };
+                            // set nested array object mongoose schema
+                            typeObj.type = [setType(fieldName, prop.items.type, prop.items).type];
+                        }
+                        else {
+                            if (prop.items["x-foreignKey"]) {
+                                const fkType = prop.items['x-format'] == 'ObjectId' ? 'Schema.Types.ObjectId' : "String";
+                                typeObj.type = [`{{${fkType}}}`];
+                            }
+                            else {
+                                typeObj.type = [toTypeClass(prop.items.type)];
+                            }
+                        }
                     }
                     break;
                 case "object":
@@ -134,7 +166,7 @@ function json2MongooseChunk(schemaProperties: types.jsonSchema["properties"], co
         };
 
         // loop trough all the properties
-        mongooseSchema[fields] = setType(prop.type, prop);;
+        mongooseSchema[fields] = setType(fields, prop.type, prop);;
         if (prop.default) {
             mongooseSchema[fields].default = prop.default;
         }
