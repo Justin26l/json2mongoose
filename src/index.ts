@@ -37,21 +37,26 @@ export function genarate(schemaDir: string, modelDir: string, typeDir: string, o
                     return;
                 }
 
-                const fileName = schemaFileName.replace(".json", "");
-                const fileNameUpper = fileName.charAt(0).toUpperCase() + fileName.slice(1);
+                const jsonSchemaBuffer = fs.readFileSync(`${schemaDir}/${schemaFileName}`);
+                const jsonSchema = JSON.parse(jsonSchemaBuffer.toString());
+                const documentName = jsonSchema["x-documentConfig"]?.documentName;
+
+                if(!documentName){
+                    throw new Error(`invalid "x-documentConfig.documentName" in ${schemaDir}/${schemaFileName}`);
+                }
 
                 // make interface
                 typesGen.compileFromFile(
                     `${schemaDir}/${schemaFileName}`,
-                    `${typeDir}/${fileNameUpper}.ts`,
+                    `${typeDir}/${documentName}.ts`,
                     options || utils.defaultCompilerOptions
                 );
 
                 // make model
                 modelsGen.compileFromFile(
                     `${schemaDir}/${schemaFileName}`,
-                    `${relativePath(modelDir, typeDir)}/${fileName}`,
-                    `${modelDir}/${fileNameUpper}Model.ts`,
+                    `${relativePath(modelDir, typeDir)}/${documentName}`,
+                    `${modelDir}/${documentName}Model.ts`,
                     options || utils.defaultCompilerOptions
                 );
             }
